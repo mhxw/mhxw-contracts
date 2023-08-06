@@ -3,7 +3,6 @@ node_modules
 
 # local env variables
 .env
-.env*
 
 # truffle build directory
 build/
