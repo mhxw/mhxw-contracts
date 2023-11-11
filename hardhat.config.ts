@@ -25,8 +25,12 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {},
     polygon_mumbai: {
-      url: process.env.POLYGON_MUMBAI_RPC_URL,
+      url: "https://rpc.ankr.com/polygon_mumbai",
       chainId: 80001,
+      accounts: [process.env.PRIVATE_KEY as string],
+    },
+    arb_goe: {
+      url: "https://arbitrum-goerli.publicnode.com",
       accounts: [process.env.PRIVATE_KEY as string],
     },
   },
@@ -42,6 +46,7 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: {
       polygonMumbai: process.env.POLYGON_MUMBAI_API_KEY ?? "",
+      arbitrumGoerli: process.env.ARBITRUM_GOERLI_API_KEY ?? "",
     },
   },
   preprocess: {

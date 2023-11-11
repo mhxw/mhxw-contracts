@@ -2,6 +2,8 @@
 
 pragma solidity 0.8.18;
 
+import { Address } from "openzeppelin-contracts/contracts/utils/Address.sol";
+import { Strings } from "openzeppelin-contracts/contracts/utils/Strings.sol";
 import { ERC721 } from "openzeppelin-contracts/contracts/token/ERC721/ERC721.sol";
 import { Ownable2Step } from "openzeppelin-contracts/contracts/access/Ownable2Step.sol";
 import { Pausable } from "openzeppelin-contracts/contracts/security/Pausable.sol";
@@ -12,11 +14,12 @@ import { ISunshineNFT } from "../interfaces/ISunshineNFT.sol";
 
 error MintPriceNotPaid();
 error MaxSupply();
+error MaxNum();
 error WithdrawTransfer();
 
 /**
  * @title Sunshine NFT
- * @author mhxw
+ * @author nft
  * @notice This contract is used to create a sunshine NFT.
  */
 contract SunshineNFT is
@@ -27,8 +30,9 @@ contract SunshineNFT is
     PullPayment,
     ISunshineNFT
 {
+    using Address for address;
+    using Strings for uint256;
     uint256 public constant TOTAL_SUPPLY = 10_000;
-    uint256 public constant MINT_PRICE = 0.08 ether;
     uint256 public currentTokenId;
     string public baseURI;
 
@@ -46,15 +50,32 @@ contract SunshineNFT is
                                  EXTERNAL
     //////////////////////////////////////////////////////////////*/
 
-    function mintTo(address recipient) external payable nonReentrant {
-        if (msg.value != MINT_PRICE) {
-            revert MintPriceNotPaid();
+    function tokenURI(
+        uint256 tokenId
+    ) public view virtual override returns (string memory) {
+        require(_ownerOf(tokenId) != address(0), "Token Not Exist");
+
+        string memory baseURI_ = _baseURI();
+        return
+            bytes(baseURI_).length > 0
+                ? string(abi.encodePacked(baseURI_, tokenId.toString()))
+                : "";
+    }
+
+    function mint(uint256 num, address recipient) external nonReentrant {
+        if (num > 10) {
+            revert MaxNum();
         }
-        uint256 newTokenId = ++currentTokenId;
-        if (newTokenId > TOTAL_SUPPLY) {
-            revert MaxSupply();
+        for (uint256 i; i < num; ) {
+            uint256 newTokenId = ++currentTokenId;
+            if (newTokenId > TOTAL_SUPPLY) {
+                revert MaxSupply();
+            }
+            _safeMint(recipient, newTokenId);
+            unchecked {
+                ++i;
+            }
         }
-        _safeMint(recipient, newTokenId);
     }
 
     /// @inheritdoc ISunshineNFT

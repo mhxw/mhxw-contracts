@@ -1,18 +1,21 @@
-import { run } from "hardhat";
+import { network, run } from "hardhat";
 
 export const verify = async (contractAddress: string, args: any[]) => {
-  console.log("Verifying contract...");
-  await sleep(10000);
-  try {
-    await run("verify:verify", {
-      address: contractAddress,
-      constructorArguments: args,
-    });
-  } catch (e: any) {
-    if (e.message.toLowerCase().includes("already verified")) {
-      console.log("Already verified!");
-    } else {
-      console.log(e);
+  if (network.name != "hardhat") {
+    console.log("Verifying contract...");
+
+    await sleep(10000);
+    try {
+      await run("verify:verify", {
+        address: contractAddress,
+        constructorArguments: args,
+      });
+    } catch (e: any) {
+      if (e.message.toLowerCase().includes("already verified")) {
+        console.log("Already verified!");
+      } else {
+        console.log(e);
+      }
     }
   }
 };

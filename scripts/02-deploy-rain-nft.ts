@@ -3,29 +3,25 @@ import { verify } from "../helper-functions";
 
 async function main() {
   const [deployer] = await ethers.getSigners();
-  let name = "Sunshine NFT";
-  let symbol = "SUN";
+  let name = "Rain NFT";
+  let symbol = "RAIN";
   let baseURI =
     "https://dweb.link/ipfs/bafybeidssyny2hua4v4upxpt3d4j6kdluxb6nvhcvcsyqnralvrd3vavei/";
-  const sunshineNFTContract = await ethers.getContractFactory(
-    "SunshineNFT",
+  const rainNFTContract = await ethers.getContractFactory(
+    "RainNFT",
     deployer
   );
   console.log(deployer.address);
-  const sunshineNFTInterface = await sunshineNFTContract.deploy(
+  const rainNFTInterface = await rainNFTContract.deploy(
     deployer.address,
-    name,
-    symbol,
     baseURI
   );
-  await sunshineNFTInterface.waitForDeployment();
+  await rainNFTInterface.waitForDeployment();
 
-  console.log(`deployed to ${sunshineNFTInterface.target} on ${network.name} `);
+  console.log(`deployed to ${rainNFTInterface.target} on ${network.name} `);
 
-  await verify(sunshineNFTInterface.target.toString(), [
+  await verify(rainNFTInterface.target.toString(), [
     deployer.address,
-    name,
-    symbol,
     baseURI,
   ]);
 }
